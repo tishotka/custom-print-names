@@ -199,8 +199,6 @@
   font-family:Arial,sans-serif;line-height:1.6;
 }
 
-
-
 /* ── SIZE SELECTOR ──────────────────────────────────────────── */
 #tshotka-form .ts-sizes{display:flex;gap:8px;flex-wrap:wrap}
 #tshotka-form .ts-size-opt{
@@ -287,83 +285,33 @@
 
 <div id="tshotka-form">
 
-  <!-- ── КРОК 1: ПРИНТ ──────────────────────────────────────── -->
+  <!-- 1. ІМ'Я -->
   <div class="ts-section">
     <span class="ts-label">Ваше ім'я</span>
     <input type="text" id="ts-name" placeholder="Наприклад: Наталія" maxlength="30">
     <div class="ts-err-msg" id="ts-name-err">Введіть ім'я</div>
   </div>
 
-  <div class="ts-section">
-    <span class="ts-label">Підпис на принті</span>
-    <input type="text" id="ts-slogan" placeholder="Наприклад: Філософія, де все має сенс лише для Наталії" maxlength="60">
-    <div class="ts-err-msg" id="ts-slogan-err">Введіть підпис</div>
-  </div>
-
-
-  <!-- РОЗМІР -->
-  <div class="ts-section">
-    <span class="ts-label">Розмір футболки</span>
-    <div class="ts-sizes" id="ts-sizes">
-      <div class="ts-size-opt" data-size="XS">XS</div>
-      <div class="ts-size-opt" data-size="S">S</div>
-      <div class="ts-size-opt active" data-size="M">M</div>
-      <div class="ts-size-opt" data-size="L">L</div>
-      <div class="ts-size-opt" data-size="XL">XL</div>
-      <div class="ts-size-opt" data-size="XXL">XXL</div>
-      <div class="ts-size-opt" data-size="3XL">3XL</div>
-      <div class="ts-size-opt" data-size="4XL">4XL</div>
-      <div class="ts-size-opt" data-size="5XL">5XL</div>
-    </div>
-    <div class="ts-err-msg" id="ts-size-err">Виберіть розмір</div>
-
-    <!-- Розмірна сітка -->
-    <div class="ts-size-table-wrap">
-      <div class="ts-size-toggle" id="ts-size-toggle">📏 Таблиця розмірів</div>
-      <div class="ts-size-table" id="ts-size-table" style="display:none">
-        <img src="https://i.imgur.com/placeholder.png" alt="Таблиця розмірів" style="display:none">
-        <table>
-          <thead>
-            <tr>
-              <th>EU</th><th>XS</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th><th>3XL</th><th>4XL</th><th>5XL</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>UA/RU</td><td>44</td><td>46</td><td>48</td><td>50-52</td><td>54-56</td><td>56-58</td><td>58-60</td><td>60-62</td><td>64</td></tr>
-            <tr><td>Ширина</td><td>48</td><td>51</td><td>53</td><td>56</td><td>58</td><td>61</td><td>66</td><td>68</td><td>72</td></tr>
-            <tr><td>Довжина</td><td>68</td><td>70</td><td>72</td><td>74</td><td>76</td><td>78</td><td>82</td><td>84</td><td>88</td></tr>
-          </tbody>
-        </table>
-        <p style="font-size:11px;color:#888;margin-top:8px;font-family:Arial,sans-serif">* Розміри вказані в сантиметрах. Класична футболка (прямий/стандартний крій)</p>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- СТАТЬ -->
+  <!-- 2. СТАТЬ -->
   <div class="ts-section">
     <span class="ts-label">Стать</span>
     <div class="ts-colors">
-      <div class="ts-color-opt active" id="ts-gen-female" style="font-size:14px">
-        👩 Жіноча
-      </div>
-      <div class="ts-color-opt" id="ts-gen-male" style="font-size:14px">
-        👨 Чоловіча
-      </div>
+      <div class="ts-color-opt active" id="ts-gen-female" style="font-size:14px">👩 Жіноча</div>
+      <div class="ts-color-opt" id="ts-gen-male" style="font-size:14px">👨 Чоловіча</div>
     </div>
   </div>
 
-  <!-- "Наш варіант" AI button -->
-  <div class="ts-section" style="margin-bottom:20px">
-    <button class="ts-btn-ai" id="ts-ai-btn">
-      <span id="ts-ai-btn-text">✨ НАШ ВАРІАНТ</span>
-      <span id="ts-ai-spinner" style="display:none">генеруємо...</span>
-    </button>
-    <div id="ts-ai-hint" style="margin-top:8px;font-family:Arial,sans-serif;font-size:11px;color:#888;text-align:center;display:none">
-      Введіть ім'я вище — ми придумаємо каламбур і підпис для вас
-    </div>
+  <!-- 3. ПРО ЛЮДИНУ -->
+  <div class="ts-section">
+    <span class="ts-label">Про людину <span style="color:#aaa;font-weight:400;letter-spacing:0">(не обов'язково)</span></span>
+    <input type="text" id="ts-about" placeholder="Наприклад: любить каву, завжди спізнюється, душа компанії">
+    <div style="font-family:Arial,sans-serif;font-size:11px;color:#aaa;margin-top:4px">Це допоможе зробити підпис більш особистим</div>
   </div>
 
+  <!-- hidden slogan field for JS compatibility -->
+  <input type="hidden" id="ts-slogan" value="">
+
+  <!-- 4. КОЛІР ФУТБОЛКИ -->
   <div class="ts-section">
     <span class="ts-label">Колір футболки</span>
     <div class="ts-colors">
@@ -378,7 +326,50 @@
     </div>
   </div>
 
-  <button class="ts-btn-gen">ЗГЕНЕРУВАТИ ПРИНТ</button>
+  <!-- 5. РОЗМІР -->
+  <div class="ts-section">
+    <span class="ts-label">Розмір футболки</span>
+    <div class="ts-sizes" id="ts-sizes">
+      <div class="ts-size-opt" data-size="XS">XS</div>
+      <div class="ts-size-opt" data-size="S">S</div>
+      <div class="ts-size-opt active" data-size="M">M</div>
+      <div class="ts-size-opt" data-size="L">L</div>
+      <div class="ts-size-opt" data-size="XL">XL</div>
+      <div class="ts-size-opt" data-size="XXL">XXL</div>
+      <div class="ts-size-opt" data-size="3XL">3XL</div>
+      <div class="ts-size-opt" data-size="4XL">4XL</div>
+      <div class="ts-size-opt" data-size="5XL">5XL</div>
+    </div>
+    <div class="ts-err-msg" id="ts-size-err">Виберіть розмір</div>
+    <div class="ts-size-table-wrap">
+      <div class="ts-size-toggle" id="ts-size-toggle">📏 Таблиця розмірів</div>
+      <div class="ts-size-table" id="ts-size-table" style="display:none">
+        <table>
+          <thead>
+            <tr><th>EU</th><th>XS</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th><th>3XL</th><th>4XL</th><th>5XL</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>UA/RU</td><td>44</td><td>46</td><td>48</td><td>50-52</td><td>54-56</td><td>56-58</td><td>58-60</td><td>60-62</td><td>64</td></tr>
+            <tr><td>Ширина</td><td>48</td><td>51</td><td>53</td><td>56</td><td>58</td><td>61</td><td>66</td><td>68</td><td>72</td></tr>
+            <tr><td>Довжина</td><td>68</td><td>70</td><td>72</td><td>74</td><td>76</td><td>78</td><td>82</td><td>84</td><td>88</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:11px;color:#888;margin-top:8px;font-family:Arial,sans-serif">* Розміри вказані в сантиметрах</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. КНОПКА -->
+  <div class="ts-section" style="margin-bottom:20px">
+    <button class="ts-btn-ai" id="ts-ai-btn">
+      <span id="ts-ai-btn-text">✨ ЗГЕНЕРУВАТИ ПРИНТ</span>
+      <span id="ts-ai-spinner" style="display:none">генеруємо...</span>
+    </button>
+    <div id="ts-ai-hint" style="margin-top:8px;font-family:Arial,sans-serif;font-size:11px;color:#888;text-align:center;display:none">
+      Введіть ім'я вище — ми придумаємо каламбур і підпис для вас
+    </div>
+  </div>
+
 
   <!-- ── КРОК 2: ПРЕВЬЮ ─────────────────────────────────────── -->
   <div id="ts-preview-section">
@@ -519,7 +510,7 @@ document.getElementById('ts-size-toggle').addEventListener('click', function(){
   table.style.display = isVisible ? 'none' : 'block';
   this.textContent = isVisible ? '📏 Таблиця розмірів' : '✕ Закрити таблицю';
 });
-document.querySelector('.ts-btn-gen').addEventListener('click', tsGenerate);
+// gen button removed
 document.getElementById('ts-buy-btn').addEventListener('click', tsBuy);
 document.getElementById('ts-city').addEventListener('input', function(){ tsSearchCity(this.value); });
 document.getElementById('ts-np-query').addEventListener('input', function(){ tsSearchNP(this.value); });
@@ -546,7 +537,8 @@ function tsSelectColor(c){
 
 function tsGenerate(){
   var name=document.getElementById('ts-name').value.trim();
-  var slogan=document.getElementById('ts-slogan').value.trim();
+  var origName=document.getElementById('ts-name').dataset.origName||name;
+  var slogan=document.getElementById('ts-slogan').value||'';
   var ok=true;
   if(!name){
     document.getElementById('ts-name').classList.add('ts-err');
@@ -556,27 +548,20 @@ function tsGenerate(){
     document.getElementById('ts-name').classList.remove('ts-err');
     document.getElementById('ts-name-err').classList.remove('show');
   }
-  if(!slogan){
-    document.getElementById('ts-slogan').classList.add('ts-err');
-    document.getElementById('ts-slogan-err').classList.add('show');
-    ok=false;
-  } else {
-    document.getElementById('ts-slogan').classList.remove('ts-err');
-    document.getElementById('ts-slogan-err').classList.remove('show');
-  }
   if(!ok) return;
   var isBlack=state.color==='black';
   var c1='#a8322a', c2=isBlack?'#a8aaab':'#353939';
   var isFemale=state.gender==='female';
-  drawFabric('ts-cv-lifestyle',name,slogan,c1,c2,isBlack,1.0);
+  var origName=document.getElementById('ts-name').dataset.origName||name;
+  drawFabric('ts-cv-lifestyle',name,slogan,c1,c2,isBlack,1.0,origName);
   document.getElementById('ts-preview-section').style.display='block';
   state.generated=true;
   setTimeout(function(){ document.getElementById('ts-preview-section').scrollIntoView({behavior:'smooth',block:'start'}); },100);
 }
 
-function drawPrintTextLeft(ctx,x,y,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan,maxW){
+function drawPrintTextLeft(ctx,x,y,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan,maxW,origName){
   ctx.save(); ctx.textBaseline='middle';
-  var parts=splitNameParts(name);
+  var parts=splitNameParts(name,origName||name);
   ctx.font='bold '+sizeMain+'px Georgia,serif';
   ctx.textAlign='left';
   var curX=x;
@@ -616,31 +601,41 @@ function isUpperChar(code){
          code===1025||code===1028||code===1030||code===1031;
 }
 
-function splitNameParts(name){
-  // Find start of uppercase block
+function splitNameParts(calamour, origName){
+  // Find origName (or its uppercase version) inside calamour
+  // origName letters may appear as uppercase block inside calamour
+  // Strategy: find the substring of calamour that corresponds to origName (case-insensitive)
+  var upper=calamour.toUpperCase();
+  var nameUp=(origName||calamour).toUpperCase();
+  var idx=upper.indexOf(nameUp);
+  if(idx>=0){
+    return {
+      prefix: calamour.slice(0,idx),
+      main:   calamour.slice(idx,idx+nameUp.length),
+      suffix: calamour.slice(idx+nameUp.length)
+    };
+  }
+  // Fallback: find first uppercase block
   var start=-1, end=-1;
-  for(var i=0;i<name.length;i++){
-    if(isUpperChar(name.charCodeAt(i))){
+  for(var i=0;i<calamour.length;i++){
+    if(isUpperChar(calamour.charCodeAt(i))){
       if(start===-1) start=i;
       end=i;
     } else {
-      if(start!==-1) break; // uppercase block ended
+      if(start!==-1) break;
     }
   }
-  if(start===-1) return {prefix:'', main:name}; // no uppercase — all one color
-  // prefix = before uppercase block (grey)
-  // main = uppercase block (red)  
-  // suffix = after uppercase block (grey)
+  if(start===-1) return {prefix:'', main:calamour, suffix:''};
   return {
-    prefix: name.slice(0, start),
-    main:   name.slice(start, end+1),
-    suffix: name.slice(end+1)
+    prefix: calamour.slice(0,start),
+    main:   calamour.slice(start,end+1),
+    suffix: calamour.slice(end+1)
   };
 }
 
 function drawPrintText(ctx,cx,cy,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan){
   ctx.save(); ctx.textBaseline='middle';
-  var parts=splitNameParts(name);
+  var parts=splitNameParts(name,origName||name);
   ctx.font='bold '+sizeMain+'px Georgia,serif';
   var pw=ctx.measureText(parts.prefix).width;
   var mw=ctx.measureText(parts.main).width;
@@ -670,7 +665,7 @@ function drawPrintText(ctx,cx,cy,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan){
   ctx.globalAlpha=1; ctx.restore();
 }
 
-function drawFabric(id,name,slogan,c1,c2,isBlack,scale){
+function drawFabric(id,name,slogan,c1,c2,isBlack,scale,origName){
   var cv=document.getElementById(id),ctx=cv.getContext('2d'),W=800,H=800;
   cv.width=W; cv.height=H;
 
@@ -699,7 +694,7 @@ function drawFabric(id,name,slogan,c1,c2,isBlack,scale){
   var ssz=Math.round(26*scale);
   var margin=W*0.1;
   var textY=H*0.44;
-  drawPrintTextLeft(ctx,margin,textY,name,slogan,c1,c2,isBlack,sz,ssz,W*0.82);
+  drawPrintTextLeft(ctx,margin,textY,name,slogan,c1,c2,isBlack,sz,ssz,W*0.82,origName||name);
 }
 
 function drawLifestyle(id,name,slogan,c1,c2,isBlack,isFemale){
@@ -954,7 +949,7 @@ function tsBuy(){
   var btn=document.getElementById('ts-buy-btn');
   btn.disabled=true; btn.textContent='ВІДПРАВКА...';
   var name=document.getElementById('ts-name').value.trim();
-  var slogan=document.getElementById('ts-slogan').value.trim();
+  var slogan=document.getElementById('ts-slogan').value||'';
   var isBlack=state.color==='black';
   var c1='#a8322a',c2=isBlack?'#a8aaab':'#353939';
   var pngData=generatePrintPNG(name,slogan,c1,c2);
