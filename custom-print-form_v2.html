@@ -340,6 +340,20 @@
     </div>
   </div>
 
+
+  <!-- СТАТЬ -->
+  <div class="ts-section">
+    <span class="ts-label">Стать</span>
+    <div class="ts-colors">
+      <div class="ts-color-opt active" id="ts-gen-female" style="font-size:14px">
+        👩 Жіноча
+      </div>
+      <div class="ts-color-opt" id="ts-gen-male" style="font-size:14px">
+        👨 Чоловіча
+      </div>
+    </div>
+  </div>
+
   <!-- "Наш варіант" AI button -->
   <div class="ts-section" style="margin-bottom:20px">
     <button class="ts-btn-ai" id="ts-ai-btn">
@@ -465,12 +479,26 @@ var CFG = {
   }
 };
 
-var state = { color:'black', size:'M', cityRef:'', cityName:'', npWarehouse:'', npRef:'', generated:false };
+var state = { color:'black', size:'M', gender:'female', cityRef:'', cityName:'', npWarehouse:'', npRef:'', generated:false };
 
 // Bind all events
 document.getElementById('ts-col-black').addEventListener('click', function(){ tsSelectColor('black'); });
 document.getElementById('ts-col-white').addEventListener('click', function(){ tsSelectColor('white'); });
 document.getElementById('ts-ai-btn').addEventListener('click', tsAiVariant);
+
+// Gender selection
+document.getElementById('ts-gen-female').addEventListener('click', function(){
+  state.gender='female';
+  document.getElementById('ts-gen-female').classList.add('active');
+  document.getElementById('ts-gen-male').classList.remove('active');
+  if(state.generated) tsGenerate();
+});
+document.getElementById('ts-gen-male').addEventListener('click', function(){
+  state.gender='male';
+  document.getElementById('ts-gen-male').classList.add('active');
+  document.getElementById('ts-gen-female').classList.remove('active');
+  if(state.generated) tsGenerate();
+});
 
 // Size selection
 var sizePrices = {
@@ -545,17 +573,54 @@ function tsGenerate(){
   if(!ok) return;
   var isBlack=state.color==='black';
   var c1='#a8322a', c2=isBlack?'#a8aaab':'#353939';
-  drawLifestyle('ts-cv-lifestyle',name,slogan,c1,c2,isBlack);
-  drawPrint('ts-cv-print',name,slogan,c1,c2,isBlack);
-  drawGhost('ts-cv-ghost',name,slogan,c1,c2,isBlack);
+  var isFemale=state.gender==='female';
+  drawLifestyle('ts-cv-lifestyle',name,slogan,c1,c2,isBlack,isFemale);
+  drawPrint('ts-cv-print',name,slogan,c1,c2,isBlack,isFemale);
+  drawGhost('ts-cv-ghost',name,slogan,c1,c2,isBlack,isFemale);
   document.getElementById('ts-preview-section').style.display='block';
   state.generated=true;
   setTimeout(function(){ document.getElementById('ts-preview-section').scrollIntoView({behavior:'smooth',block:'start'}); },100);
 }
 
+function drawPrintTextLeft(ctx,x,y,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan,maxW){
+  ctx.save(); ctx.textBaseline='middle';
+  var parts=splitNameParts(name);
+  ctx.font='bold '+sizeMain+'px Georgia,serif';
+  ctx.textAlign='left';
+  ctx.fillStyle=c2; ctx.fillText(parts.prefix,x,y);
+  var pw=ctx.measureText(parts.prefix).width;
+  ctx.fillStyle=c1; ctx.fillText(parts.main,x+pw,y);
+  // Slogan with word wrap, left aligned
+  ctx.font='italic '+sizeSlogan+'px Georgia,serif';
+  ctx.fillStyle=c2; ctx.globalAlpha=0.85;
+  var words=slogan.split(' '), lines=[], line='';
+  var mw=maxW||600;
+  for(var i=0;i<words.length;i++){
+    var test=line?line+' '+words[i]:words[i];
+    if(ctx.measureText(test).width>mw&&line){ lines.push(line); line=words[i]; }
+    else { line=test; }
+  }
+  if(line) lines.push(line);
+  var lineH=sizeSlogan*1.4;
+  var startY=y+sizeMain*0.7;
+  for(var j=0;j<lines.length;j++){
+    ctx.fillText(lines[j],x,startY+j*lineH);
+  }
+  ctx.globalAlpha=1; ctx.restore();
+}
+
 function splitNameParts(name){
-  var match=name.match(/^([а-яёіїєґa-z]*)([А-ЯЁІЇЄҐA-Z].*)/);
-  if(match&&match[1].length>0) return {prefix:match[1],main:match[2]};
+  // Find first uppercase Cyrillic or Latin character
+  var i=0;
+  while(i<name.length){
+    var code=name.charCodeAt(i);
+    // Uppercase Cyrillic: 1040-1071, Uppercase Latin: 65-90
+    var isUpper=(code>=1040&&code<=1071)||(code>=65&&code<=90)||
+                code===1025||code===1028||code===1030||code===1031||code===1068; // Є,І,Ї,Й
+    if(isUpper&&i>0) return {prefix:name.slice(0,i),main:name.slice(i)};
+    if(isUpper&&i===0) return {prefix:'',main:name};
+    i++;
+  }
   return {prefix:'',main:name};
 }
 
@@ -569,58 +634,129 @@ function drawPrintText(ctx,cx,cy,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan){
   ctx.textAlign='left';
   ctx.fillStyle=c2; ctx.fillText(parts.prefix,startX,cy-sizeMain*0.6);
   ctx.fillStyle=c1; ctx.fillText(parts.main,startX+pw,cy-sizeMain*0.6);
+  // Slogan with word wrap
   ctx.textAlign='center';
   ctx.font='italic '+sizeSlogan+'px Georgia,serif';
   ctx.fillStyle=c2; ctx.globalAlpha=0.9;
-  ctx.fillText(slogan,cx,cy+sizeMain*0.55);
+  var maxW=(pw+mw)*2.2||ctx.canvas.width*0.7;
+  var words=slogan.split(' ');
+  var lines=[],line='';
+  for(var i=0;i<words.length;i++){
+    var test=line?line+' '+words[i]:words[i];
+    if(ctx.measureText(test).width>maxW&&line){
+      lines.push(line); line=words[i];
+    } else { line=test; }
+  }
+  if(line) lines.push(line);
+  var lineH=sizeSlogan*1.4;
+  var startY=cy+sizeMain*0.55;
+  for(var j=0;j<lines.length;j++){
+    ctx.fillText(lines[j],cx,startY+j*lineH);
+  }
   ctx.globalAlpha=1; ctx.restore();
 }
 
-function drawLifestyle(id,name,slogan,c1,c2,isBlack){
+function drawLifestyle(id,name,slogan,c1,c2,isBlack,isFemale){
   var cv=document.getElementById(id),ctx=cv.getContext('2d'),W=800,H=800;
   cv.width=W; cv.height=H;
-  ctx.fillStyle=isBlack?'#1c1c1e':'#f0ede8'; ctx.fillRect(0,0,W,H);
-  var vg=ctx.createRadialGradient(W/2,H/2,W*0.3,W/2,H/2,W*0.7);
-  vg.addColorStop(0,'rgba(0,0,0,0)');
-  vg.addColorStop(1,isBlack?'rgba(0,0,0,0.4)':'rgba(0,0,0,0.12)');
-  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
-  drawPrintText(ctx,W/2,H*0.42,name,slogan,c1,c2,isBlack,54,22);
-}
-
-function drawPrint(id,name,slogan,c1,c2,isBlack){
-  var cv=document.getElementById(id),ctx=cv.getContext('2d'),W=800,H=800;
-  cv.width=W; cv.height=H;
-  ctx.fillStyle=isBlack?'#141414':'#f8f5f0'; ctx.fillRect(0,0,W,H);
-  for(var i=0;i<2000;i++){
-    ctx.fillStyle=isBlack?'rgba(255,255,255,0.015)':'rgba(0,0,0,0.018)';
+  // Background gradient
+  var bg=ctx.createLinearGradient(0,0,W,H);
+  if(isBlack){
+    bg.addColorStop(0,'#1a1a1a'); bg.addColorStop(1,'#2d2d2d');
+  } else {
+    bg.addColorStop(0,'#e8e0d5'); bg.addColorStop(1,'#f5f0e8');
+  }
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  // Noise texture
+  for(var i=0;i<3000;i++){
+    ctx.fillStyle=isBlack?'rgba(255,255,255,0.012)':'rgba(0,0,0,0.015)';
     ctx.fillRect(Math.random()*W,Math.random()*H,1,1);
   }
-  drawPrintText(ctx,W/2,H*0.44,name,slogan,c1,c2,isBlack,72,26);
+  // Side accent line
+  ctx.fillStyle=c1;
+  ctx.fillRect(0,0,4,H);
+  // Gender label top right
+  ctx.font='bold 13px Arial,sans-serif';
+  ctx.fillStyle=isBlack?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.2)';
+  ctx.textAlign='right';
+  ctx.fillText(isFemale?'ЖІНОЧА':'ЧОЛОВІЧА', W-30, 40);
+  // Print text left-aligned
+  var margin=W*0.1;
+  drawPrintTextLeft(ctx,margin,H*0.42,name,slogan,c1,c2,isBlack,60,24,W*0.8);
 }
 
-function drawTshirtShape(ctx,W,H,fill,stroke){
-  ctx.save(); ctx.beginPath();
-  ctx.moveTo(W*0.28,H*0.2);
-  ctx.lineTo(W*0.12,H*0.28); ctx.lineTo(W*0.05,H*0.44);
-  ctx.lineTo(W*0.22,H*0.47); ctx.lineTo(W*0.22,H*0.3);
-  ctx.lineTo(W*0.2,H*0.3);   ctx.lineTo(W*0.2,H*0.88);
-  ctx.lineTo(W*0.8,H*0.88);  ctx.lineTo(W*0.8,H*0.3);
-  ctx.lineTo(W*0.78,H*0.3);  ctx.lineTo(W*0.78,H*0.47);
-  ctx.lineTo(W*0.95,H*0.44); ctx.lineTo(W*0.88,H*0.28);
-  ctx.lineTo(W*0.72,H*0.2);
-  ctx.quadraticCurveTo(W*0.62,H*0.24,W*0.5,H*0.24);
-  ctx.quadraticCurveTo(W*0.38,H*0.24,W*0.28,H*0.2);
-  ctx.closePath();
-  ctx.fillStyle=fill; ctx.fill();
-  ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
-}
-
-function drawGhost(id,name,slogan,c1,c2,isBlack){
+function drawPrint(id,name,slogan,c1,c2,isBlack,isFemale){
   var cv=document.getElementById(id),ctx=cv.getContext('2d'),W=800,H=800;
   cv.width=W; cv.height=H;
-  ctx.fillStyle='#f2f2f2'; ctx.fillRect(0,0,W,H);
-  drawTshirtShape(ctx,W,H,isBlack?'#1a1a1a':'#ffffff',isBlack?'#111':'#d0ccc8');
-  drawPrintText(ctx,W/2,H*0.45,name,slogan,c1,c2,isBlack,44,17);
+  ctx.fillStyle=isBlack?'#111111':'#f5f2ed'; ctx.fillRect(0,0,W,H);
+  // Fabric texture
+  for(var i=0;i<3000;i++){
+    ctx.fillStyle=isBlack?'rgba(255,255,255,0.018)':'rgba(0,0,0,0.02)';
+    ctx.fillRect(Math.random()*W,Math.random()*H,1,1);
+  }
+  // Subtle vignette
+  var vg=ctx.createRadialGradient(W/2,H/2,W*0.25,W/2,H/2,W*0.75);
+  vg.addColorStop(0,'rgba(0,0,0,0)');
+  vg.addColorStop(1,isBlack?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.08)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+  var margin=W*0.1;
+  drawPrintTextLeft(ctx,margin,H*0.44,name,slogan,c1,c2,isBlack,80,28,W*0.8);
+}
+
+function drawTshirtShape(ctx,W,H,fill,stroke,isFemale){
+  ctx.save();
+  // Shadow
+  ctx.shadowColor='rgba(0,0,0,0.12)';
+  ctx.shadowBlur=18;
+  ctx.shadowOffsetY=6;
+  ctx.beginPath();
+  // Collar
+  var collarDip=H*0.23;
+  // Left side
+  ctx.moveTo(W*0.3,H*0.12);
+  // Left sleeve outer
+  ctx.lineTo(W*0.08,H*0.22);
+  ctx.lineTo(W*0.03,H*0.42);
+  ctx.lineTo(W*0.22,H*0.46);
+  // Left sleeve inner join body
+  ctx.lineTo(W*0.22,H*0.28);
+  ctx.lineTo(W*0.18,H*0.28);
+  // Body left
+  ctx.lineTo(W*0.18,H*0.9);
+  // Body bottom
+  ctx.lineTo(W*0.82,H*0.9);
+  // Body right
+  ctx.lineTo(W*0.82,H*0.28);
+  ctx.lineTo(W*0.78,H*0.28);
+  // Right sleeve inner
+  ctx.lineTo(W*0.78,H*0.46);
+  ctx.lineTo(W*0.97,H*0.42);
+  ctx.lineTo(W*0.92,H*0.22);
+  ctx.lineTo(W*0.7,H*0.12);
+  // Collar right to left
+  ctx.bezierCurveTo(W*0.63,H*0.16,W*0.57,collarDip,W*0.5,collarDip);
+  ctx.bezierCurveTo(W*0.43,collarDip,W*0.37,H*0.16,W*0.3,H*0.12);
+  ctx.closePath();
+  ctx.fillStyle=fill; ctx.fill();
+  ctx.shadowColor='transparent';
+  ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.restore();
+}
+
+function drawGhost(id,name,slogan,c1,c2,isBlack,isFemale){
+  var cv=document.getElementById(id),ctx=cv.getContext('2d'),W=800,H=800;
+  cv.width=W; cv.height=H;
+  ctx.fillStyle='#efefef'; ctx.fillRect(0,0,W,H);
+  // Subtle grid
+  ctx.strokeStyle='rgba(0,0,0,0.04)'; ctx.lineWidth=1;
+  for(var i=0;i<W;i+=40){ ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke(); }
+  for(var j=0;j<H;j+=40){ ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke(); }
+  drawTshirtShape(ctx,W,H,isBlack?'#1c1c1c':'#ffffff',isBlack?'#333':'#ccc',isFemale);
+  // Print area left-aligned within shirt body
+  var shirtLeft=W*0.22, shirtRight=W*0.78;
+  var printX=shirtLeft+W*0.05;
+  var printY=H*0.44;
+  drawPrintTextLeft(ctx,printX,printY,name,slogan,c1,c2,isBlack,40,15,(shirtRight-shirtLeft)*0.85);
 }
 
 function generatePrintPNG(name,slogan,c1,c2){
@@ -630,7 +766,7 @@ function generatePrintPNG(name,slogan,c1,c2){
   var ctx=cv.getContext('2d');
   ctx.clearRect(0,0,SIZE,SIZE);
   var scale=SIZE/800;
-  drawPrintText(ctx,SIZE/2,SIZE/2,name,slogan,c1,c2,true,Math.round(72*scale),Math.round(26*scale));
+  drawPrintTextLeft(ctx,PAD*2,SIZE*0.45,name,slogan,c1,c2,true,Math.round(72*scale),Math.round(26*scale),SIZE-PAD*4);
   var bbox=getContentBBox(ctx,SIZE,SIZE);
   if(!bbox) return cv.toDataURL('image/png');
   var cw=bbox.maxX-bbox.minX+PAD*2,ch=bbox.maxY-bbox.minY+PAD*2;
@@ -779,12 +915,13 @@ function tsBuy(){
   var params={
     to_email:CFG.toEmail, print_name:name, print_slogan:slogan,
     tshirt_color:isBlack?'Чорна':'Біла',
+    tshirt_gender:state.gender==='female'?'Жіноча':'Чоловіча',
     tshirt_size:state.size,
     customer_pib:document.getElementById('ts-pib').value.trim(),
     customer_phone:document.getElementById('ts-phone').value.trim(),
     delivery_city:state.cityName, delivery_np:state.npWarehouse,
     print_file:pngData,
-    print_text:'=== ТЕКСТОВИЙ ВАРІАНТ ===\nРядок 1: '+name+'\nРядок 2: '+slogan+'\nКолір: '+(isBlack?'Чорна':'Біла')+'\nРозмір: '+state.size+'\n========================='
+    print_text:'=== ТЕКСТОВИЙ ВАРІАНТ ===\nРядок 1: '+name+'\nРядок 2: '+slogan+'\nКолір: '+(isBlack?'Чорна':'Біла')+'\nРозмір: '+state.size+'\nСтать: '+(state.gender==='female'?'Жіноча':'Чоловіча')+'\n========================='
   };
   if(typeof emailjs!=='undefined'){
     emailjs.send(CFG.emailjsServiceId,CFG.emailjsTemplateId,params)
