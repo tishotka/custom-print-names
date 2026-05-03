@@ -979,49 +979,32 @@ function tsBuy(){
     return;
   }
   var btn=document.getElementById('ts-buy-btn');
-  btn.disabled=true; btn.textContent='ЗБЕРІГАЄМО ПРИНТ...';
+  btn.disabled=true; btn.textContent='ВІДПРАВКА...';
   var slogan=document.getElementById('ts-slogan').value||'';
   var isBlack=state.color==='black';
-  var c1='#a8322a',c2=isBlack?'#a8aaab':'#353939';
-  var pngData=generatePrintPNG(calamour,slogan,c1,c2);
-
-  var GAS=CFG.gasUrl;
-  var fileName='print_'+origName+'_'+Date.now()+'.png';
-
-  fetch(GAS,{
-    method:'POST',
-    headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({action:'save_png',filename:fileName,png:pngData})
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    console.log('Drive response:', JSON.stringify(d));
-    var driveLink=d.success?d.url:'(не вдалося зберегти)';
-    btn.textContent='ВІДПРАВКА...';
-    var params={
-      to_email:CFG.toEmail,
-      print_name:calamour,
-      print_slogan:slogan,
-      tshirt_color:isBlack?'Чорна':'Біла',
-      tshirt_gender:state.gender==='female'?'Жіноча':'Чоловіча',
-      tshirt_size:state.size,
-      customer_pib:document.getElementById('ts-pib').value.trim(),
-      customer_phone:document.getElementById('ts-phone').value.trim(),
-      delivery_city:state.cityName,
-      delivery_np:state.npWarehouse,
-      print_file:driveLink,
-      print_text:'Каламбур: '+calamour+'\nПідпис: '+slogan+'\nКолір: '+(isBlack?'Чорна':'Біла')+'\nРозмір: '+state.size+'\nСтать: '+(state.gender==='female'?'Жіноча':'Чоловіча')
-    };
-    if(typeof emailjs!=='undefined'){
-      return emailjs.send(CFG.emailjsServiceId,CFG.emailjsTemplateId,params);
-    }
-  })
-  .then(function(){tsShowSuccess();})
-  .catch(function(err){
-    btn.disabled=false;
-    btn.textContent='ОПЛАТИТИ '+(sizePrices[state.size]||'749')+' ГРН';
-    alert('Помилка відправки.\n'+JSON.stringify(err));
-  });
+  var params={
+    to_email:CFG.toEmail,
+    print_name:calamour,
+    print_slogan:slogan,
+    tshirt_color:isBlack?'Чорна':'Біла',
+    tshirt_gender:state.gender==='female'?'Жіноча':'Чоловіча',
+    tshirt_size:state.size,
+    customer_pib:document.getElementById('ts-pib').value.trim(),
+    customer_phone:document.getElementById('ts-phone').value.trim(),
+    delivery_city:state.cityName,
+    delivery_np:state.npWarehouse,
+    print_text:'Каламбур: '+calamour+'\nПідпис: '+slogan+'\nКолір: '+(isBlack?'Чорна':'Біла')+'\nРозмір: '+state.size+'\nСтать: '+(state.gender==='female'?'Жіноча':'Чоловіча')
+  };
+  var sendPromise=typeof emailjs!=='undefined'
+    ? emailjs.send(CFG.emailjsServiceId,CFG.emailjsTemplateId,params)
+    : Promise.resolve();
+  sendPromise
+    .then(function(){tsShowSuccess();})
+    .catch(function(err){
+      btn.disabled=false;
+      btn.textContent='ОПЛАТИТИ '+(sizePrices[state.size]||'749')+' ГРН';
+      alert('Помилка відправки.\n'+JSON.stringify(err));
+    });
 }
 
 function tsShowSuccess(){
