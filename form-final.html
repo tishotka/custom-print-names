@@ -551,8 +551,6 @@ function tsGenerate(){
   } else {
     document.getElementById('ts-name').classList.remove('ts-err');
     document.getElementById('ts-name-err').classList.remove('show');
-    // Clear stored calamour when name changes
-    document.getElementById('ts-name').dataset.calamour='';
   }
   if(!ok) return;
   var isBlack=state.color==='black';
@@ -972,11 +970,15 @@ function validateOrder(){
 
 function tsBuy(){
   if(!validateOrder()) return;
+  var origName=document.getElementById('ts-name').value.trim();
+  var calamour=document.getElementById('ts-name').dataset.calamour||'';
+  if(!calamour){
+    alert('Спочатку натисніть "✨ ЗГЕНЕРУВАТИ ПРИНТ" щоб створити каламбур!');
+    document.getElementById('ts-ai-btn').scrollIntoView({behavior:'smooth'});
+    return;
+  }
   var btn=document.getElementById('ts-buy-btn');
   btn.disabled=true; btn.textContent='ЗБЕРІГАЄМО ПРИНТ...';
-
-  var origName=document.getElementById('ts-name').value.trim();
-  var calamour=document.getElementById('ts-name').dataset.calamour||origName;
   var slogan=document.getElementById('ts-slogan').value||'';
   var isBlack=state.color==='black';
   var c1='#a8322a',c2=isBlack?'#a8aaab':'#353939';
