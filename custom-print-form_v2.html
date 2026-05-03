@@ -304,7 +304,7 @@
   <!-- 3. ПРО ЛЮДИНУ -->
   <div class="ts-section">
     <span class="ts-label">Про людину <span style="color:#aaa;font-weight:400;letter-spacing:0">(не обов'язково)</span></span>
-    <input type="text" id="ts-about" placeholder="Наприклад: любить каву, завжди спізнюється, душа компанії">
+    <input type="text" id="ts-about" placeholder="Наприклад: любить каву, завжди запізнюється, душа компанії">
     <div style="font-family:Arial,sans-serif;font-size:11px;color:#aaa;margin-top:4px">Це допоможе зробити підпис більш особистим</div>
   </div>
 
@@ -536,8 +536,8 @@ function tsSelectColor(c){
 }
 
 function tsGenerate(){
-  var name=document.getElementById('ts-name').value.trim();
-  var origName=document.getElementById('ts-name').dataset.origName||name;
+  var origName=document.getElementById('ts-name').value.trim();
+  var name=document.getElementById('ts-name').dataset.calamour||origName;
   var slogan=document.getElementById('ts-slogan').value||'';
   var ok=true;
   if(!name){
@@ -552,8 +552,7 @@ function tsGenerate(){
   var isBlack=state.color==='black';
   var c1='#a8322a', c2=isBlack?'#a8aaab':'#353939';
   var isFemale=state.gender==='female';
-  var origName=document.getElementById('ts-name').dataset.origName||name;
-  drawFabric('ts-cv-lifestyle',name,slogan,c1,c2,isBlack,1.0,origName);
+  drawFabric('ts-cv-lifestyle',name,slogan,c1,c2,isBlack,1.0,origName||name);
   document.getElementById('ts-preview-section').style.display='block';
   state.generated=true;
   setTimeout(function(){ document.getElementById('ts-preview-section').scrollIntoView({behavior:'smooth',block:'start'}); },100);
@@ -1013,7 +1012,7 @@ function tsAiVariant(){
     'Приклади: легАЛІНА, фантАНАСТАСІЯ, каВАЛЕРІЯ, легенДАРИНА, вогнЄВА, балерІРИНА. '+
     'Також придумай короткий дотепний підпис — одне речення з гумором. '+
     'Відповідай ТІЛЬКИ JSON: {"line1":"каламбур","line2":"підпис"}';
-  fetch('https://script.google.com/macros/s/AKfycbyDSIlxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec?name='+encodeURIComponent(name),{
+  fetch('https://script.google.com/macros/s/AKfycbyDSIlxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec?name='+encodeURIComponent(theName)+'&prompt='+encodeURIComponent(prompt),{
     method:'GET'
   })
   .then(function(r){return r.json()})
