@@ -825,7 +825,7 @@ function drawGhost(id,name,slogan,c1,c2,isBlack,isFemale){
 }
 
 function generatePrintPNG(name,slogan,c1,c2){
-  var SIZE=4724,PAD=4;
+  var SIZE=1200,PAD=20;
   var cv=document.createElement('canvas');
   cv.width=SIZE; cv.height=SIZE;
   var ctx=cv.getContext('2d');
@@ -834,10 +834,11 @@ function generatePrintPNG(name,slogan,c1,c2){
   drawPrintTextLeft(ctx,PAD*2,SIZE*0.45,name,slogan,c1,c2,true,Math.round(72*scale),Math.round(26*scale),SIZE-PAD*4);
   var bbox=getContentBBox(ctx,SIZE,SIZE);
   if(!bbox) return cv.toDataURL('image/png');
-  var cw=bbox.maxX-bbox.minX+PAD*2,ch=bbox.maxY-bbox.minY+PAD*2;
+  var PAD2=PAD*2;
+  var cw=bbox.maxX-bbox.minX+PAD2*2, ch=bbox.maxY-bbox.minY+PAD2*2;
   var out=document.createElement('canvas');
   out.width=cw; out.height=ch;
-  out.getContext('2d').drawImage(cv,bbox.minX-PAD,bbox.minY-PAD,cw,ch,0,0,cw,ch);
+  out.getContext('2d').drawImage(cv,bbox.minX-PAD2,bbox.minY-PAD2,cw,ch,0,0,cw,ch);
   return out.toDataURL('image/png');
 }
 
@@ -994,6 +995,7 @@ function tsBuy(){
   })
   .then(function(r){return r.json();})
   .then(function(d){
+    console.log('Drive response:', JSON.stringify(d));
     var driveLink=d.success?d.url:'(не вдалося зберегти)';
     btn.textContent='ВІДПРАВКА...';
     var params={
