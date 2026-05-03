@@ -705,12 +705,19 @@ function drawFabric(id,name,slogan,c1,c2,isBlack,scale,origName){
   vg.addColorStop(1,isBlack?'rgba(0,0,0,0.45)':'rgba(0,0,0,0.07)');
   ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
 
-  // Print text left-aligned, scaled
+  // Auto-fit font size
+  var margin=W*0.1;
+  var maxW=W*0.82;
   var sz=Math.round(72*scale);
   var ssz=Math.round(26*scale);
-  var margin=W*0.1;
+  ctx.font='bold '+sz+'px Georgia,serif';
+  while(ctx.measureText(name).width>maxW && sz>20){
+    sz--;
+    ssz=Math.max(13,Math.round(sz*0.36));
+    ctx.font='bold '+sz+'px Georgia,serif';
+  }
   var textY=H*0.44;
-  drawPrintTextLeft(ctx,margin,textY,name,slogan,c1,c2,isBlack,sz,ssz,W*0.82,origName||name);
+  drawPrintTextLeft(ctx,margin,textY,name,slogan,c1,c2,isBlack,sz,ssz,maxW,origName||name);
 }
 
 function drawLifestyle(id,name,slogan,c1,c2,isBlack,isFemale){
@@ -993,7 +1000,8 @@ function tsBuy(){
 function tsShowSuccess(){
   document.getElementById('ts-preview-section').style.display='none';
   document.getElementById('ts-success').style.display='block';
-  document.querySelector('.ts-btn-gen').style.display='none';
+  var genBtn=document.querySelector('.ts-btn-gen');
+  if(genBtn) genBtn.style.display='none';
   setTimeout(function(){
     window.location.href = CFG.monoLinks[state.size] || CFG.monoLinks["M"];
   },1500);
