@@ -823,7 +823,7 @@ function tsAiVariant(){
     'Відповідай ТІЛЬКИ JSON: {"line1":"каламбур","line2":"підпис"}';
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':window.__ANTHROPIC_API_KEY__||'',
+    headers:{'Content-Type':'application/json','x-api-key':'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',
       'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:'claude-sonnet-4-5-20251001',max_tokens:200,messages:[{role:'user',content:prompt}]})
   })
