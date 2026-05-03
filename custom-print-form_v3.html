@@ -985,7 +985,11 @@ function tsBuy(){
   var GAS=CFG.gasUrl;
   var fileName='print_'+origName+'_'+Date.now()+'.png';
 
-  fetch(GAS+'?action=save_png&filename='+encodeURIComponent(fileName)+'&png='+encodeURIComponent(pngData),{method:'GET'})
+  fetch(GAS,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({action:'save_png',filename:fileName,png:pngData})
+  })
   .then(function(r){return r.json();})
   .then(function(d){
     var driveLink=d.success?d.url:'(не вдалося зберегти)';
