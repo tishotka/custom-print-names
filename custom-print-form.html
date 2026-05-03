@@ -821,10 +821,8 @@ function tsAiVariant(){
     'Приклади: легАЛІНА, фантАНАСТАСІЯ, каВАЛЕРІЯ, легенДАРИНА, вогнЄВА, балерІРИНА. '+
     'Також придумай короткий дотепний підпис — одне речення з гумором. '+
     'Відповідай ТІЛЬКИ JSON: {"line1":"каламбур","line2":"підпис"}';
-  fetch('https://script.google.com/macros/s/AKfycbyDSllxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec',{
-    method:'POST',
-    headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({name:name})
+  fetch('https://script.google.com/macros/s/AKfycbyDSllxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec?name='+encodeURIComponent(name),{
+    method:'GET'
   })
   .then(function(r){return r.json()})
   .then(function(d){
