@@ -115,9 +115,8 @@
   margin-bottom:16px;
 }
 #tshotka-form .ts-previews{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
+  display:flex;
+  justify-content:center;
   margin-bottom:28px;
 }
 #tshotka-form .ts-previews canvas{
@@ -386,12 +385,7 @@
     <hr class="ts-divider">
     <div class="ts-preview-title">Ваш принт — перегляд</div>
     <div class="ts-previews">
-      <!-- canvas 1: lifestyle dark -->
-      <canvas id="ts-cv-lifestyle" width="800" height="800"></canvas>
-      <!-- canvas 2: print closeup -->
-      <canvas id="ts-cv-print" width="800" height="800"></canvas>
-      <!-- canvas 3: ghost tee -->
-      <canvas id="ts-cv-ghost" width="800" height="800"></canvas>
+      <canvas id="ts-cv-lifestyle" width="800" height="800" style="max-width:480px;width:100%;display:block;margin:0 auto"></canvas>
     </div>
 
     <!-- ── КРОК 3: ЗАМОВЛЕННЯ ──────────────────────────────── -->
@@ -574,9 +568,7 @@ function tsGenerate(){
   var isBlack=state.color==='black';
   var c1='#a8322a', c2=isBlack?'#a8aaab':'#353939';
   var isFemale=state.gender==='female';
-  drawLifestyle('ts-cv-lifestyle',name,slogan,c1,c2,isBlack,isFemale);
-  drawPrint('ts-cv-print',name,slogan,c1,c2,isBlack,isFemale);
-  drawGhost('ts-cv-ghost',name,slogan,c1,c2,isBlack,isFemale);
+  drawFabric('ts-cv-lifestyle',name,slogan,c1,c2,isBlack,1.0);
   document.getElementById('ts-preview-section').style.display='block';
   state.generated=true;
   setTimeout(function(){ document.getElementById('ts-preview-section').scrollIntoView({behavior:'smooth',block:'start'}); },100);
@@ -587,9 +579,19 @@ function drawPrintTextLeft(ctx,x,y,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan
   var parts=splitNameParts(name);
   ctx.font='bold '+sizeMain+'px Georgia,serif';
   ctx.textAlign='left';
-  ctx.fillStyle=c2; ctx.fillText(parts.prefix,x,y);
-  var pw=ctx.measureText(parts.prefix).width;
-  ctx.fillStyle=c1; ctx.fillText(parts.main,x+pw,y);
+  var curX=x;
+  // prefix (grey)
+  if(parts.prefix){
+    ctx.fillStyle=c2; ctx.fillText(parts.prefix,curX,y);
+    curX+=ctx.measureText(parts.prefix).width;
+  }
+  // main = uppercase block (red)
+  ctx.fillStyle=c1; ctx.fillText(parts.main,curX,y);
+  curX+=ctx.measureText(parts.main).width;
+  // suffix (grey)
+  if(parts.suffix){
+    ctx.fillStyle=c2; ctx.fillText(parts.suffix,curX,y);
+  }
   // Slogan with word wrap, left aligned
   ctx.font='italic '+sizeSlogan+'px Georgia,serif';
   ctx.fillStyle=c2; ctx.globalAlpha=0.85;
@@ -609,19 +611,31 @@ function drawPrintTextLeft(ctx,x,y,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan
   ctx.globalAlpha=1; ctx.restore();
 }
 
+function isUpperChar(code){
+  return (code>=1040&&code<=1071)||(code>=65&&code<=90)||
+         code===1025||code===1028||code===1030||code===1031;
+}
+
 function splitNameParts(name){
-  // Find first uppercase Cyrillic or Latin character
-  var i=0;
-  while(i<name.length){
-    var code=name.charCodeAt(i);
-    // Uppercase Cyrillic: 1040-1071, Uppercase Latin: 65-90
-    var isUpper=(code>=1040&&code<=1071)||(code>=65&&code<=90)||
-                code===1025||code===1028||code===1030||code===1031||code===1068; // Є,І,Ї,Й
-    if(isUpper&&i>0) return {prefix:name.slice(0,i),main:name.slice(i)};
-    if(isUpper&&i===0) return {prefix:'',main:name};
-    i++;
+  // Find start of uppercase block
+  var start=-1, end=-1;
+  for(var i=0;i<name.length;i++){
+    if(isUpperChar(name.charCodeAt(i))){
+      if(start===-1) start=i;
+      end=i;
+    } else {
+      if(start!==-1) break; // uppercase block ended
+    }
   }
-  return {prefix:'',main:name};
+  if(start===-1) return {prefix:'', main:name}; // no uppercase — all one color
+  // prefix = before uppercase block (grey)
+  // main = uppercase block (red)  
+  // suffix = after uppercase block (grey)
+  return {
+    prefix: name.slice(0, start),
+    main:   name.slice(start, end+1),
+    suffix: name.slice(end+1)
+  };
 }
 
 function drawPrintText(ctx,cx,cy,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan){
@@ -654,6 +668,38 @@ function drawPrintText(ctx,cx,cy,name,slogan,c1,c2,isBlack,sizeMain,sizeSlogan){
     ctx.fillText(lines[j],cx,startY+j*lineH);
   }
   ctx.globalAlpha=1; ctx.restore();
+}
+
+function drawFabric(id,name,slogan,c1,c2,isBlack,scale){
+  var cv=document.getElementById(id),ctx=cv.getContext('2d'),W=800,H=800;
+  cv.width=W; cv.height=H;
+
+  // Base fabric color
+  ctx.fillStyle=isBlack?'#111111':'#f5f2ed';
+  ctx.fillRect(0,0,W,H);
+
+  // Fabric weave texture
+  var grain=isBlack?'rgba(255,255,255,':'rgba(0,0,0,';
+  for(var i=0;i<4000;i++){
+    var x=Math.random()*W, y=Math.random()*H;
+    var op=(Math.random()*0.025+0.005).toFixed(3);
+    ctx.fillStyle=grain+op+')';
+    var w=Math.random()<0.5?2:1, h=Math.random()<0.5?1:2;
+    ctx.fillRect(x,y,w,h);
+  }
+
+  // Subtle vignette
+  var vg=ctx.createRadialGradient(W/2,H/2,W*0.2,W/2,H/2,W*0.75);
+  vg.addColorStop(0,'rgba(0,0,0,0)');
+  vg.addColorStop(1,isBlack?'rgba(0,0,0,0.45)':'rgba(0,0,0,0.07)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+
+  // Print text left-aligned, scaled
+  var sz=Math.round(72*scale);
+  var ssz=Math.round(26*scale);
+  var margin=W*0.1;
+  var textY=H*0.44;
+  drawPrintTextLeft(ctx,margin,textY,name,slogan,c1,c2,isBlack,sz,ssz,W*0.82);
 }
 
 function drawLifestyle(id,name,slogan,c1,c2,isBlack,isFemale){
