@@ -602,20 +602,34 @@ function isUpperChar(code){
 }
 
 function splitNameParts(calamour, origName){
-  // Find origName (or its uppercase version) inside calamour
-  // origName letters may appear as uppercase block inside calamour
-  // Strategy: find the substring of calamour that corresponds to origName (case-insensitive)
-  var upper=calamour.toUpperCase();
-  var nameUp=(origName||calamour).toUpperCase();
-  var idx=upper.indexOf(nameUp);
-  if(idx>=0){
-    return {
-      prefix: calamour.slice(0,idx),
-      main:   calamour.slice(idx,idx+nameUp.length),
-      suffix: calamour.slice(idx+nameUp.length)
-    };
+  // Strategy 1: find origName (case-insensitive) inside calamour
+  // Color only that part red, rest grey
+  if(origName && origName.length>0){
+    var upper=calamour.toUpperCase();
+    var nameUp=origName.toUpperCase();
+    var idx=upper.indexOf(nameUp);
+    if(idx>=0){
+      return {
+        prefix: calamour.slice(0,idx),
+        main:   calamour.slice(idx,idx+nameUp.length),
+        suffix: calamour.slice(idx+nameUp.length)
+      };
+    }
+    // Strategy 2: find partial match — name root (first 3+ chars)
+    var root=nameUp.slice(0,Math.max(3,Math.floor(nameUp.length*0.6)));
+    var ridx=upper.indexOf(root);
+    if(ridx>=0){
+      // Find end of uppercase run from ridx
+      var end=ridx;
+      while(end<calamour.length && isUpperChar(calamour.charCodeAt(end))) end++;
+      return {
+        prefix: calamour.slice(0,ridx),
+        main:   calamour.slice(ridx,end),
+        suffix: calamour.slice(end)
+      };
+    }
   }
-  // Fallback: find first uppercase block
+  // Strategy 3: find consecutive uppercase block
   var start=-1, end=-1;
   for(var i=0;i<calamour.length;i++){
     if(isUpperChar(calamour.charCodeAt(i))){
