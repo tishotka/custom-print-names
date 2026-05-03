@@ -821,22 +821,19 @@ function tsAiVariant(){
     'Приклади: легАЛІНА, фантАНАСТАСІЯ, каВАЛЕРІЯ, легенДАРИНА, вогнЄВА, балерІРИНА. '+
     'Також придумай короткий дотепний підпис — одне речення з гумором. '+
     'Відповідай ТІЛЬКИ JSON: {"line1":"каламбур","line2":"підпис"}';
-  fetch('https://api.anthropic.com/v1/messages',{
+  fetch('https://script.google.com/macros/s/AKfycbyDSllxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec',{
     method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':'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',
-      'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-sonnet-4-5-20251001',max_tokens:200,messages:[{role:'user',content:prompt}]})
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({name:name})
   })
   .then(function(r){return r.json()})
   .then(function(d){
     btn.disabled=false;
     document.getElementById('ts-ai-btn-text').style.display='inline';
     document.getElementById('ts-ai-spinner').style.display='none';
-    var text=d.content&&d.content[0]&&d.content[0].text;
-    if(!text) throw new Error('no text');
-    var parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
-    if(parsed.line1) document.getElementById('ts-name').value=parsed.line1;
-    if(parsed.line2) document.getElementById('ts-slogan').value=parsed.line2;
+    if(!d.success) throw new Error(d.error||'error');
+    if(d.line1) document.getElementById('ts-name').value=d.line1;
+    if(d.line2) document.getElementById('ts-slogan').value=d.line2;
     tsGenerate();
   })
   .catch(function(err){
