@@ -453,6 +453,7 @@ var CFG = {
   npApiKey:          '2e2b025aa1e09936d88fd2b2404ec3da',
   toEmail:           'tishotka.work.1@gmail.com',
   
+  gasUrl: 'https://script.google.com/macros/s/AKfycbyDSIlxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec',
   monoLinks: {
     'XS':  'https://send.monobank.ua/61mjSodrDN?a=749.00',
     'S':   'https://send.monobank.ua/61mjSodrDN?a=749.00',
@@ -972,31 +973,47 @@ function validateOrder(){
 function tsBuy(){
   if(!validateOrder()) return;
   var btn=document.getElementById('ts-buy-btn');
-  btn.disabled=true; btn.textContent='ВІДПРАВКА...';
-  var name=document.getElementById('ts-name').value.trim();
+  btn.disabled=true; btn.textContent='ЗБЕРІГАЄМО ПРИНТ...';
+
+  var origName=document.getElementById('ts-name').value.trim();
+  var calamour=document.getElementById('ts-name').dataset.calamour||origName;
   var slogan=document.getElementById('ts-slogan').value||'';
   var isBlack=state.color==='black';
   var c1='#a8322a',c2=isBlack?'#a8aaab':'#353939';
-  var pngData=generatePrintPNG(name,slogan,c1,c2);
-  var params={
-    to_email:CFG.toEmail, print_name:name, print_slogan:slogan,
-    tshirt_color:isBlack?'Чорна':'Біла',
-    tshirt_gender:state.gender==='female'?'Жіноча':'Чоловіча',
-    tshirt_size:state.size,
-    customer_pib:document.getElementById('ts-pib').value.trim(),
-    customer_phone:document.getElementById('ts-phone').value.trim(),
-    delivery_city:state.cityName, delivery_np:state.npWarehouse,
-    print_file:pngData,
-    print_text:'=== ТЕКСТОВИЙ ВАРІАНТ ===\nРядок 1: '+name+'\nРядок 2: '+slogan+'\nКолір: '+(isBlack?'Чорна':'Біла')+'\nРозмір: '+state.size+'\nСтать: '+(state.gender==='female'?'Жіноча':'Чоловіча')+'\n========================='
-  };
-  if(typeof emailjs!=='undefined'){
-    emailjs.send(CFG.emailjsServiceId,CFG.emailjsTemplateId,params)
-    .then(function(){tsShowSuccess();})
-    .catch(function(err){
-      btn.disabled=false; btn.textContent='ОПЛАТИТИ 749 ГРН';
-      alert('Помилка відправки.\n'+JSON.stringify(err));
-    });
-  } else { tsShowSuccess(); }
+  var pngData=generatePrintPNG(calamour,slogan,c1,c2);
+
+  var GAS=CFG.gasUrl;
+  var fileName='print_'+origName+'_'+Date.now()+'.png';
+
+  fetch(GAS+'?action=save_png&filename='+encodeURIComponent(fileName)+'&png='+encodeURIComponent(pngData),{method:'GET'})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var driveLink=d.success?d.url:'(не вдалося зберегти)';
+    btn.textContent='ВІДПРАВКА...';
+    var params={
+      to_email:CFG.toEmail,
+      print_name:calamour,
+      print_slogan:slogan,
+      tshirt_color:isBlack?'Чорна':'Біла',
+      tshirt_gender:state.gender==='female'?'Жіноча':'Чоловіча',
+      tshirt_size:state.size,
+      customer_pib:document.getElementById('ts-pib').value.trim(),
+      customer_phone:document.getElementById('ts-phone').value.trim(),
+      delivery_city:state.cityName,
+      delivery_np:state.npWarehouse,
+      print_file:driveLink,
+      print_text:'Каламбур: '+calamour+'\nПідпис: '+slogan+'\nКолір: '+(isBlack?'Чорна':'Біла')+'\nРозмір: '+state.size+'\nСтать: '+(state.gender==='female'?'Жіноча':'Чоловіча')
+    };
+    if(typeof emailjs!=='undefined'){
+      return emailjs.send(CFG.emailjsServiceId,CFG.emailjsTemplateId,params);
+    }
+  })
+  .then(function(){tsShowSuccess();})
+  .catch(function(err){
+    btn.disabled=false;
+    btn.textContent='ОПЛАТИТИ '+(sizePrices[state.size]||'749')+' ГРН';
+    alert('Помилка відправки.\n'+JSON.stringify(err));
+  });
 }
 
 function tsShowSuccess(){
