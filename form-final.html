@@ -1123,12 +1123,14 @@ function tsAiVariant(){
   var genderHint=isFemaleGen?'Людина — жінка/дівчина, використовуй жіночий рід.':'Людина — чоловік/хлопець, використовуй чоловічий рід.';
   var about=document.getElementById('ts-about')?document.getElementById('ts-about').value.trim():'';
   var aboutHint=about?'Про людину: "'+about+'". Зроби підпис особистим.':'Підпис — короткий та дотепний.';
-  var basePrompt='Ти — креативний копірайтер TiSHOTKA. Придумай каламбур з іменем "'+name+'" українською. '+
-    'Правило: ім\'я має бути написане ПОВНІСТЮ ВЕЛИКИМИ ЛІТЕРАМИ всередині слова, решта — малими. '+
-    'Приклади: адренАЛІНА, трансляЮЛІЯ, АНДРІЙналін, легАЛІНА, женЖЕНЯсна. '+
-    'ВАЖЛИВО: ім\'я "'+name+'" — ВЕЛИКИМИ ЛІТЕРАМИ повністю, без виключень. '+
-    genderHint+' '+aboutHint+' '+
-    'Відповідай ТІЛЬКИ JSON: {"line1":"каламбур","line2":"підпис"}. КОЖЕН РАЗ придумуй УНІКАЛЬНИЙ каламбур.';
+  var basePrompt='Ти — дотепний копірайтер TiSHOTKA, майстер словесного гумору. Придумай смішний каламбур з іменем "'+name+'" українською. '+
+    'ПРАВИЛО НАПИСАННЯ: ім\'я — ВЕЛИКИМИ ЛІТЕРАМИ всередині звичайного слова. Решта — малими. '+
+    'Приклади хороших каламбурів: адренАЛІНА (Аліна+адреналін), кавоМАНІЯ (Маня+кавоманія), АНДРІЙналін (Андрій+адреналін), легАЛІНА (Аліна+легально), женЖЕНЯсна (Женя+женесна). '+
+    'ВАЖЛИВО: ім\'я "'+name+'" — ПОВНІСТЮ ВЕЛИКИМИ, без виключень. Не скорочуй ім\'я. '+
+    genderHint+' '+
+    'Підпис — дотепний жарт про людину, 1 речення. '+aboutHint+' '+
+    'Намагайся бути максимально смішним і несподіваним! Уникай банальних підписів. '+
+    'Відповідай ТІЛЬКИ JSON без коментарів: {"line1":"каламбур","line2":"підпис"}. КОЖЕН РАЗ придумуй абсолютно УНІКАЛЬНИЙ каламбур — не повторюй.';
 
   var GAS='https://script.google.com/macros/s/AKfycbyDSIlxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec';
   var count=6;
@@ -1176,11 +1178,11 @@ function tsRenderVariants(origName, variants){
 
   var drawFns=[
     function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); },
-    function(id,v){ drawPrint(id,v.line1,v.line2,c1,c2,isBlack,isFemale); },
-    function(id,v){ drawLifestyle(id,v.line1,v.line2,c1,c2,isBlack,isFemale); },
-    function(id,v){ drawGhost(id,v.line1,v.line2,c1,c2,isBlack,isFemale); },
     function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); },
-    function(id,v){ drawPrint(id,v.line1,v.line2,c1,c2,isBlack,isFemale); }
+    function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); },
+    function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); },
+    function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); },
+    function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); }
   ];
 
   variants.forEach(function(v,idx){
