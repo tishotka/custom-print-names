@@ -13,7 +13,69 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>emailjs.init('aJs_efzoxeLWSBwRX');</script>
 <style>
-/* ── RESET & BASE ───────────────────────────────────────────── */
+/* ── VARIANT CARDS ──────────────────────────────────────────── */
+#tshotka-form .ts-variant-card{
+  position:relative;
+  border:2px solid #e0e0e0;
+  cursor:pointer;
+  transition:border-color .15s, box-shadow .15s;
+  background:#fff;
+}
+#tshotka-form .ts-variant-card:hover{
+  border-color:#bbb;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+#tshotka-form .ts-variant-card.selected{
+  border-color:#a8322a;
+  box-shadow:0 0 0 1px #a8322a;
+}
+#tshotka-form .ts-variant-check{
+  display:none;
+  position:absolute;
+  top:8px; right:8px;
+  width:24px; height:24px;
+  background:#a8322a;
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  font-family:Arial,sans-serif;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+}
+#tshotka-form .ts-variant-card.selected .ts-variant-check{
+  display:flex;
+}
+#tshotka-form .ts-variant-label{
+  padding:8px 10px;
+  border-top:1px solid #eee;
+  background:#fafafa;
+}
+#tshotka-form .ts-variant-line1{
+  display:block;
+  font-family:Georgia,serif;
+  font-weight:700;
+  font-size:13px;
+  color:#1a1a1a;
+  margin-bottom:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#tshotka-form .ts-variant-line2{
+  display:block;
+  font-family:Arial,sans-serif;
+  font-size:11px;
+  color:#888;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+@media(max-width:480px){
+  #ts-variants-grid{ grid-template-columns:1fr 1fr!important; gap:8px!important; }
+}
+
+
 #tshotka-form *{box-sizing:border-box;margin:0;padding:0}
 #tshotka-form{
   font-family:'Georgia',serif;
@@ -287,6 +349,15 @@
 
 <div id="tshotka-form">
 
+  <!-- ЛОГОТИП -->
+  <div style="margin-bottom:28px">
+    <svg viewBox="0 0 200 72" xmlns="http://www.w3.org/2000/svg" style="width:130px;height:auto;display:block">
+      <rect width="200" height="72" fill="#a8322a"/>
+      <text x="8" y="44" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="40" fill="white" letter-spacing="-1">TiШОТ</text>
+      <text x="8" y="68" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="40" fill="white" letter-spacing="-1">КА▶▶▶</text>
+    </svg>
+  </div>
+
   <!-- 1. ІМ'Я -->
   <div class="ts-section">
     <span class="ts-label">Ваше ім'я</span>
@@ -370,16 +441,35 @@
     <div id="ts-ai-hint" style="margin-top:8px;font-family:Arial,sans-serif;font-size:11px;color:#888;text-align:center;display:none">
       Введіть ім'я вище — ми придумаємо каламбур і підпис для вас
     </div>
+    <div style="margin-top:12px;text-align:center">
+      <a href="https://t.me/tishotka" target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;
+                font-family:Arial,sans-serif;font-size:12px;font-weight:700;
+                letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;
+                color:#555;border:1px solid #ddd;padding:10px 18px;
+                transition:border-color .2s,color .2s">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.93 7.244l-1.686 7.942c-.127.566-.46.703-.932.437l-2.58-1.901-1.244 1.197c-.138.138-.254.254-.52.254l.185-2.63 4.797-4.334c.208-.185-.046-.288-.323-.103L7.61 14.829l-2.54-.794c-.552-.173-.563-.552.115-.818l9.916-3.823c.46-.167.863.103.829.85z" fill="#229ED9"/>
+        </svg>
+        Або напишіть у Telegram
+      </a>
+    </div>
   </div>
 
 
   <!-- ── КРОК 2: ПРЕВЬЮ ─────────────────────────────────────── -->
   <div id="ts-preview-section">
     <hr class="ts-divider">
-    <div class="ts-preview-title">Ваш принт — перегляд</div>
-    <div class="ts-previews">
-      <canvas id="ts-cv-lifestyle" width="800" height="800" style="max-width:480px;width:100%;display:block;margin:0 auto"></canvas>
+    <div class="ts-preview-title">Оберіть варіант принту</div>
+    <div style="font-family:Arial,sans-serif;font-size:12px;color:#888;margin-bottom:16px;text-align:center">
+      Натисніть на картку щоб вибрати — потім оформіть замовлення
     </div>
+    <div id="ts-variants-grid" style="
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-bottom:24px;
+    "></div>
 
     <!-- ── КРОК 3: ЗАМОВЛЕННЯ ──────────────────────────────── -->
     <div class="ts-preview-title">Оформлення замовлення</div>
@@ -1028,39 +1118,107 @@ function tsAiVariant(){
   btn.disabled=true;
   document.getElementById('ts-ai-btn-text').style.display='none';
   document.getElementById('ts-ai-spinner').style.display='inline';
+
   var isFemaleGen=state.gender==='female';
   var genderHint=isFemaleGen?'Людина — жінка/дівчина, використовуй жіночий рід.':'Людина — чоловік/хлопець, використовуй чоловічий рід.';
   var about=document.getElementById('ts-about')?document.getElementById('ts-about').value.trim():'';
   var aboutHint=about?'Про людину: "'+about+'". Зроби підпис особистим.':'Підпис — короткий та дотепний.';
-  var prompt='Ти — креативний копірайтер TiSHOTKA. Придумай каламбур з іменем "'+name+'" українською. '+
+  var basePrompt='Ти — креативний копірайтер TiSHOTKA. Придумай каламбур з іменем "'+name+'" українською. '+
     'Правило: ім\'я має бути написане ПОВНІСТЮ ВЕЛИКИМИ ЛІТЕРАМИ всередині слова, решта — малими. '+
     'Приклади: адренАЛІНА, трансляЮЛІЯ, АНДРІЙналін, легАЛІНА, женЖЕНЯсна. '+
     'ВАЖЛИВО: ім\'я "'+name+'" — ВЕЛИКИМИ ЛІТЕРАМИ повністю, без виключень. '+
     genderHint+' '+aboutHint+' '+
-    'Відповідай ТІЛЬКИ JSON: {"line1":"каламбур","line2":"підпис"}';
-  fetch('https://script.google.com/macros/s/AKfycbyDSIlxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec?name='+encodeURIComponent(name)+'&prompt='+encodeURIComponent(prompt),{
-    method:'GET'
-  })
-  .then(function(r){return r.json()})
-  .then(function(d){
+    'Відповідай ТІЛЬКИ JSON: {"line1":"каламбур","line2":"підпис"}. КОЖЕН РАЗ придумуй УНІКАЛЬНИЙ каламбур.';
+
+  var GAS='https://script.google.com/macros/s/AKfycbyDSIlxGy17tnWu0zxOlvnhj2jXpLGVxRGr8FYfD-V_5BTgiBql-ZPsrwJOiZsh6B3z/exec';
+  var count=6;
+  var promises=[];
+  for(var i=0;i<count;i++){
+    (function(idx){
+      promises.push(
+        fetch(GAS+'?name='+encodeURIComponent(name)+'&prompt='+encodeURIComponent(basePrompt)+'&rnd='+idx+'_'+Date.now(),{method:'GET'})
+        .then(function(r){return r.json();})
+        .catch(function(){return null;})
+      );
+    })(i);
+  }
+
+  Promise.all(promises).then(function(results){
     btn.disabled=false;
     document.getElementById('ts-ai-btn-text').style.display='inline';
     document.getElementById('ts-ai-spinner').style.display='none';
-    if(!d.success) throw new Error(d.error||'error');
-    if(d.line1) {
-      // Store calamour separately — keep user's name in the field
-      document.getElementById('ts-name').dataset.calamour = d.line1;
-    }
-    if(d.line2) document.getElementById('ts-slogan').value=d.line2;
-    tsGenerate();
-  })
-  .catch(function(err){
-    btn.disabled=false;
-    document.getElementById('ts-ai-btn-text').style.display='inline';
-    document.getElementById('ts-ai-spinner').style.display='none';
-    alert('Помилка генерації. Спробуйте ще раз.');
-    console.error(err);
+
+    var variants=results.filter(function(d){return d&&d.success&&d.line1;});
+    if(!variants.length){ alert('Помилка генерації. Спробуйте ще раз.'); return; }
+
+    // deduplicate by line1
+    var seen={};
+    variants=variants.filter(function(d){
+      if(seen[d.line1]) return false;
+      seen[d.line1]=true; return true;
+    });
+
+    state.generated=true;
+    state.selectedVariant=0;
+    state.variants=variants;
+
+    tsRenderVariants(name, variants);
   });
+}
+
+function tsRenderVariants(origName, variants){
+  var grid=document.getElementById('ts-variants-grid');
+  grid.innerHTML='';
+
+  var isBlack=state.color==='black';
+  var c1='#a8322a', c2=isBlack?'#a8aaab':'#353939';
+  var isFemale=state.gender==='female';
+
+  var drawFns=[
+    function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); },
+    function(id,v){ drawPrint(id,v.line1,v.line2,c1,c2,isBlack,isFemale); },
+    function(id,v){ drawLifestyle(id,v.line1,v.line2,c1,c2,isBlack,isFemale); },
+    function(id,v){ drawGhost(id,v.line1,v.line2,c1,c2,isBlack,isFemale); },
+    function(id,v){ drawFabric(id,v.line1,v.line2,c1,c2,isBlack,1.0,origName); },
+    function(id,v){ drawPrint(id,v.line1,v.line2,c1,c2,isBlack,isFemale); }
+  ];
+
+  variants.forEach(function(v,idx){
+    var canvasId='ts-variant-cv-'+idx;
+    var card=document.createElement('div');
+    card.className='ts-variant-card'+(idx===0?' selected':'');
+    card.dataset.idx=idx;
+    card.innerHTML=
+      '<div class="ts-variant-check">✓</div>'+
+      '<canvas id="'+canvasId+'" width="800" height="800" style="width:100%;display:block;border-radius:2px"></canvas>'+
+      '<div class="ts-variant-label">'+
+        '<span class="ts-variant-line1">'+v.line1+'</span>'+
+        '<span class="ts-variant-line2">'+v.line2+'</span>'+
+      '</div>';
+    card.addEventListener('click',(function(i){
+      return function(){
+        document.querySelectorAll('.ts-variant-card').forEach(function(c){c.classList.remove('selected');});
+        card.classList.add('selected');
+        state.selectedVariant=i;
+        document.getElementById('ts-name').dataset.calamour=variants[i].line1;
+        document.getElementById('ts-slogan').value=variants[i].line2;
+      };
+    })(idx));
+    grid.appendChild(card);
+
+    (function(cid,vv,fi){
+      setTimeout(function(){ drawFns[fi%drawFns.length](cid,vv); }, fi*40);
+    })(canvasId, v, idx);
+  });
+
+  // pre-select first
+  document.getElementById('ts-name').dataset.calamour=variants[0].line1;
+  document.getElementById('ts-slogan').value=variants[0].line2;
+
+  document.getElementById('ts-preview-section').style.display='block';
+  setTimeout(function(){
+    document.getElementById('ts-preview-section').scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
 }
 
 }); // DOMContentLoaded
