@@ -20,6 +20,13 @@
   cursor:pointer;
   transition:border-color .15s, box-shadow .15s;
   background:#fff;
+  overflow:hidden;
+}
+#tshotka-form .ts-variant-card canvas{
+  width:100%!important;
+  height:160px!important;
+  object-fit:cover;
+  display:block;
 }
 #tshotka-form .ts-variant-card:hover{
   border-color:#bbb;
@@ -467,8 +474,9 @@
     <div id="ts-variants-grid" style="
       display:grid;
       grid-template-columns:repeat(2,1fr);
-      gap:12px;
+      gap:10px;
       margin-bottom:24px;
+      max-width:100%;
     "></div>
 
     <!-- ── КРОК 3: ЗАМОВЛЕННЯ ──────────────────────────────── -->
