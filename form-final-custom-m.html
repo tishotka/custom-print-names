@@ -10,6 +10,7 @@
 
      ============================================================ -->
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>emailjs.init('aJs_efzoxeLWSBwRX');</script>
 <style>
@@ -345,46 +346,53 @@
 
 /* ── MOBILE ─────────────────────────────────────────────────── */
 @media(max-width:520px){
-  #tshotka-form{padding:0 2px}
-  #tshotka-form .ts-section{margin-bottom:22px}
+  #tshotka-form{padding:0 8px}
+  #tshotka-form .ts-section{margin-bottom:28px}
   #tshotka-form .ts-order-grid{grid-template-columns:1fr}
   #tshotka-form .ts-full{grid-column:auto}
   #tshotka-form .ts-previews{grid-template-columns:1fr}
 
-  /* Inputs — крупнее для пальцев */
+  /* Лейблы крупнее */
+  #tshotka-form .ts-label{
+    font-size:13px;
+    letter-spacing:1.5px;
+    margin-bottom:10px;
+  }
+
+  /* Inputs */
   #tshotka-form input[type=text],
   #tshotka-form input[type=tel],
   #tshotka-form select{
-    font-size:16px; /* не зумит iOS */
-    padding:14px 14px;
+    font-size:17px;
+    padding:16px 14px;
   }
 
-  /* Стать и цвет — выше для удобного тапа */
+  /* Стать и цвет */
   #tshotka-form .ts-color-opt{
-    padding:16px 8px;
-    font-size:14px;
+    padding:20px 10px;
+    font-size:16px;
   }
   #tshotka-form .ts-swatch{
-    width:28px;height:28px;
-    margin-bottom:6px;
+    width:36px;height:36px;
+    margin-bottom:8px;
   }
 
-  /* Размеры — крупнее тап-зона */
-  #tshotka-form .ts-sizes{gap:6px}
+  /* Размеры — крупнее */
+  #tshotka-form .ts-sizes{gap:8px;flex-wrap:wrap}
   #tshotka-form .ts-size-opt{
-    width:44px;height:44px;
-    font-size:12px;
+    width:52px;height:52px;
+    font-size:14px;
   }
 
-  /* Кнопки — полная ширина, крупный шрифт */
+  /* Кнопки */
   #tshotka-form .ts-btn-ai{
-    padding:16px;
-    font-size:13px;
-    letter-spacing:1.5px;
+    padding:20px;
+    font-size:15px;
+    letter-spacing:2px;
   }
   #tshotka-form .ts-btn-buy{
-    padding:20px;
-    font-size:16px;
+    padding:22px;
+    font-size:17px;
     letter-spacing:2px;
     position:sticky;
     bottom:0;
@@ -392,41 +400,57 @@
     box-shadow:0 -4px 16px rgba(0,0,0,0.15);
   }
   #tshotka-form .ts-btn-gen{
-    padding:16px;
-    font-size:13px;
-    letter-spacing:1.5px;
+    padding:20px;
+    font-size:15px;
+    letter-spacing:2px;
   }
 
-  /* Варианты — одна колонка на узких экранах */
+  /* Варианты */
   #ts-variants-grid{
     grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
+    gap:10px!important;
   }
   #tshotka-form .ts-variant-card canvas{
-    height:130px!important;
+    height:150px!important;
   }
-  #tshotka-form .ts-variant-line1{font-size:12px}
-  #tshotka-form .ts-variant-line2{font-size:10px}
+  #tshotka-form .ts-variant-label{padding:10px}
+  #tshotka-form .ts-variant-line1{font-size:13px}
+  #tshotka-form .ts-variant-line2{font-size:11px}
 
-  /* NP результаты — крупнее для тапа */
+  /* NP результаты */
   #tshotka-form .ts-np-item{
-    padding:14px;
-    font-size:14px;
+    padding:16px 14px;
+    font-size:15px;
   }
 
   /* Telegram кнопка */
   #tshotka-form a[href*="t.me"]{
-    padding:12px 16px!important;
-    font-size:11px!important;
+    padding:14px 20px!important;
+    font-size:13px!important;
     width:100%;
+    display:flex!important;
     justify-content:center;
     box-sizing:border-box;
   }
 
-  /* Таблица размеров — скролл */
+  /* Таблица размеров */
   #tshotka-form .ts-size-table{
     -webkit-overflow-scrolling:touch;
   }
+
+  /* Логотип крупнее */
+  #tshotka-form img[src*="tishotka"]{
+    width:180px!important;
+    height:auto!important;
+  }
+
+  /* Цена */
+  #ts-price-display{
+    font-size:40px!important;
+  }
+
+  /* Разделители */
+  #tshotka-form .ts-divider{margin:32px 0}
 }
 @media(max-width:360px){
   #tshotka-form .ts-colors{flex-direction:column}
