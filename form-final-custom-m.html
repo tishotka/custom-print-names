@@ -405,17 +405,26 @@
     letter-spacing:2px;
   }
 
-  /* Варианты */
+  /* Варианты — одна колонка на мобильном, крупные */
   #ts-variants-grid{
-    grid-template-columns:1fr 1fr!important;
-    gap:10px!important;
+    grid-template-columns:1fr!important;
+    gap:14px!important;
   }
   #tshotka-form .ts-variant-card canvas{
-    height:150px!important;
+    height:260px!important;
   }
-  #tshotka-form .ts-variant-label{padding:10px}
-  #tshotka-form .ts-variant-line1{font-size:13px}
-  #tshotka-form .ts-variant-line2{font-size:11px}
+  #tshotka-form .ts-variant-label{padding:12px 14px}
+  #tshotka-form .ts-variant-line1{font-size:16px}
+  #tshotka-form .ts-variant-line2{font-size:13px;white-space:normal}
+
+  /* Кнопка оплаты — обычная, без sticky */
+  #tshotka-form .ts-btn-buy{
+    padding:22px;
+    font-size:17px;
+    letter-spacing:2px;
+    position:static;
+    box-shadow:none;
+  }
 
   /* NP результаты */
   #tshotka-form .ts-np-item{
@@ -454,9 +463,6 @@
 }
 @media(max-width:360px){
   #tshotka-form .ts-colors{flex-direction:column}
-  #ts-variants-grid{
-    grid-template-columns:1fr!important;
-  }
 }
 </style>
 
