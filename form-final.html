@@ -1087,6 +1087,7 @@ function tsBuy(){
     tshirt_color:isBlack?'Чорна':'Біла',
     tshirt_gender:state.gender==='female'?'Жіноча':'Чоловіча',
     tshirt_size:state.size,
+    order_price:(sizePrices[state.size]||'749')+' грн',
     customer_pib:document.getElementById('ts-pib').value.trim(),
     customer_phone:document.getElementById('ts-phone').value.trim(),
     delivery_city:state.cityName,
